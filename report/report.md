@@ -7,7 +7,7 @@ _The University of Western Ontario, London, Ontario, N6A 5B9, Canada_
 
 ---
 
-**Abstract:** An offline Extended Kalman Filter (EKF) is designed and evaluated for vertical flight state reconstruction of high-power sounding rockets from logged onboard IMU and barometric sensor data. The estimator maintains a three-state vector (altitude, vertical velocity, and accelerometer bias) and uses a nonlinear ISA tropospheric pressure measurement model to justify the EKF structure over a plain linear Kalman filter. The filter is evaluated on 25 flights across four heterogeneous data-logger families (50–1141 Hz IMU, 20–55 Hz baro) using an asynchronous event-replay architecture that avoids forced resampling; a Joseph-form covariance update preserves positive-definiteness throughout. Across 16 non-Raven flights with full pre-launch pad windows, 14 of 16 return a final altitude within ±5 m of the launch pad. Seven same-day cross-logger flight pairs agree on apogee altitude to within 1.3%. The two anomalous flights are explained by identified physical causes: a synoptic frontal pressure passage (+14.2 m drift) and a short low-altitude record (−8.6 m). The filter is shown to absorb a ±4400 Pa isolated barometer spike without divergence, demonstrating robustness on heterogeneous hardware. Nine Raven flights, which start logging at motor ignition with no pre-launch pad window, are processed using a time-based launch reference; after this correction all nine return a final altitude within ±12 m of the launch pad, consistent with the non-Raven fleet.
+**Abstract:** An offline Extended Kalman Filter (EKF) is designed and evaluated for vertical flight state reconstruction of high-power sounding rockets from logged onboard IMU and barometric sensor data. The estimator maintains a three-state vector (altitude, vertical velocity, and accelerometer bias) and uses a nonlinear ISA tropospheric pressure measurement model to justify the EKF structure over a plain linear Kalman filter. The filter is evaluated on 25 flights across four heterogeneous data-logger families (50–1141 Hz IMU, 20–55 Hz baro) using an asynchronous event-replay architecture that avoids forced resampling; a Joseph-form covariance update preserves positive-definiteness throughout. Across 16 non-Raven flights with full pre-launch pad windows, 14 of 16 return a final altitude within ±5 m of the launch pad. Six independent same-day cross-logger flight pairs agree on apogee altitude to within 1.3%. The two anomalous flights are explained by identified physical causes: a synoptic frontal pressure passage (+14.2 m drift) and a short low-altitude record (−8.6 m). The filter is shown to absorb a ±4400 Pa isolated barometer spike without divergence, demonstrating robustness on heterogeneous hardware. Nine Raven flights, which start logging at motor ignition with no pre-launch pad window, are processed using a time-based launch reference; after this correction all nine return a final altitude within ±12 m of the launch pad, consistent with the non-Raven fleet.
 
 ---
 
@@ -199,7 +199,7 @@ The pipeline processes 25 flights: 24 real flights from the DOFPro archive [5] p
 
 ### 6.3 Cross-Logger Validation
 
-Seven same-day flight pairs were available where both a DOFPro XTRA and a Featherweight Raven 3 logger flew on the same rocket:
+Seven logger pairings, covering six independent flights, were available where both a DOFPro XTRA and a Featherweight Raven 3 logger flew on the same rocket:
 
 | Motor                   | DOFPro AGL (m) | Raven AGL (m) | Agreement |
 | ----------------------- | -------------- | ------------- | --------- |
@@ -211,9 +211,9 @@ Seven same-day flight pairs were available where both a DOFPro XTRA and a Feathe
 | J150 (9 Dec 2017)       | 3451 m         | 3410 m        | 1.2%      |
 | J570W (9 Dec 2017)      | 3414 m         | 3369 m        | 1.3%      |
 
-All seven pairs agree to within 1.3%, confirming cross-logger data integrity; both values use the ISA troposphere formula with the same time-based launch reference as the EKF pipeline.
+All six independent pairs agree to within 1.3%, confirming cross-logger data integrity (the J510W and J510W/213 rows are one physical flight and are counted once); both values use the ISA troposphere formula with the same time-based launch reference as the EKF pipeline.
 
-† The /213 designation identifies a secondary DOFPro XTRA logger (serial 213) that flew alongside the primary XTRA on the same airframe on 8 Jul 2017, representing a single flight with two independent records.
+† The /213 designation identifies a secondary DOFPro XTRA logger (serial 213) that flew alongside the primary XTRA on the same airframe on 8 Jul 2017, representing a single flight with two records. Its sensor data matches the primary record, and its row repeats the J510W numbers, so it adds no independent cross-check.
 
 ### 6.4 Data Quality Notes
 
@@ -367,7 +367,7 @@ A single Q/R parameter set is applied across all four sensor families (IMU 50–
 
 An offline Extended Kalman Filter for vertical flight state reconstruction was designed, implemented, and validated on 25 heterogeneous sounding rocket flights. The key results are:
 
-1. **Filter correctness:** 14 of 16 non-Raven flights return a final altitude within ±5 m of the launch pad. Seven cross-validated same-day flight pairs agree on apogee altitude to within 1.3%.
+1. **Filter correctness:** 14 of 16 non-Raven flights return a final altitude within ±5 m of the launch pad. Six independent cross-validated same-day flight pairs agree on apogee altitude to within 1.3%.
 
 2. **EKF justification:** The nonlinear ISA pressure measurement model motivates the EKF structure. The filter operates in the pressure domain at each update, with altitude-domain variance kept as the tunable parameter.
 

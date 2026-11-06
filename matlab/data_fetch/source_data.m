@@ -29,15 +29,16 @@ urls = {
     'https://dofprobucket2.s3.us-east-2.amazonaws.com/E190_Prototype/E190_1JUL2017_H148R_1_Raven.csv'
 
     % --- Aerotech J500G  (8 Jul 2017, same day as J510W) ---
-    % DROPPED: no multi_time cross-validation partner; descent divergence same as all other
-    %          Raven flights; no distinctive characteristics to justify inclusion.
-    % 'https://dofprobucket2.s3.us-east-2.amazonaws.com/E190_Prototype/E190_8JUL2017_J500G_Raven.csv'
+    % Raven-only flight (no multi_time cross-validation partner). Part of the
+    % 25-flight dataset the report describes, so it stays in the list.
+    'https://dofprobucket2.s3.us-east-2.amazonaws.com/E190_Prototype/E190_8JUL2017_J500G_Raven.csv'
 
     % --- Aerotech J510W  (8 Jul 2017) ---
     'https://dofprobucket2.s3.us-east-2.amazonaws.com/E190_Prototype/E190_8JUL2017_J510W_Raven.csv'
-    % DROPPED: exact duplicate of E190_8JUL2017_J510W_1_XTRA.csv — identical sensor data,
-    %          same final_z and NIS to 5 significant figures. Adds no independent information.
-    % 'https://dofprobucket2.s3.us-east-2.amazonaws.com/E190_Prototype/E190_8JUL2017_J510W_1_XTRA_213.csv'
+    % Second XTRA record (/213) of the same physical flight as E190_8JUL2017_J510W_1_XTRA.csv;
+    % its sensor data matches that file. Kept because the report's 25-flight run includes
+    % it, but cross-logger agreement counts this flight once (6 independent pairs, not 7).
+    'https://dofprobucket2.s3.us-east-2.amazonaws.com/E190_Prototype/E190_8JUL2017_J510W_1_XTRA_213.csv'
     'https://dofprobucket2.s3.us-east-2.amazonaws.com/E190_Prototype/E190_8JUL2017_J510W_1_XTRA.csv'
     'https://dofprobucket2.s3.us-east-2.amazonaws.com/E190_Prototype/E190_8JUL2017_J510W_EmulationData.csv'
 

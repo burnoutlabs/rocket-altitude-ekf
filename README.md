@@ -67,9 +67,11 @@ directories, and are not redistributed in this repository.
   accelerometer bias. Body-axis acceleration is used as vertical, and its sign
   flips after apogee. What is and is not explained is written up in
   `docs/ekf-reference.md` §15.1; no fix has been chosen yet.
-- The report's numbers refer to 25 flights, while
-  `matlab/data_fetch/source_data.m` lists 23 active sources, so the report's
-  figures cannot be regenerated exactly from the committed source list.
+- The report's numbers come from a 25-flight run, and
+  `matlab/data_fetch/source_data.m` lists those 25 sources. The pipeline has
+  not been re-run since the list was restored to match, and the cleaning step
+  does not yet clear flights left in `matlab/_data_clean/` by an earlier run,
+  so start from an empty `_data_clean/` when reproducing the report.
 
 ## Course context
 
