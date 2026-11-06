@@ -1,0 +1,24 @@
+# Run-time data: downloaded, normalized and cleaned flight data (fetched from
+# the DOFPro archive at run time; not redistributed)
+matlab/_data_raw/
+matlab/_data_normalized/
+matlab/_data_clean/
+
+# GPS logs downloaded by matlab/gps_validation/download_gps_data.m
+# (the URL manifest gps_download_manifest.csv is tracked)
+matlab/gps_validation/_gps_raw/*_GPS.csv
+
+# Report artifacts (reproducible, large size)
+matlab/_report_artifacts/
+matlab/_report_artifacts*/
+
+# MATLAB editor/session temp files
+*.asv
+*.m~
+*.mlx.lock
+
+# Rendered report (generated; re-render from report/report.md)
+report/report_render/
+
+# Python caches
+__pycache__/

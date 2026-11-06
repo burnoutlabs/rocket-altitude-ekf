@@ -1,0 +1,91 @@
+GPS Validation — Featherweight On-Board GPS vs EKF Apogee
+Generated: 2026-04-27 19:36:34
+========================================================================
+
+Flight: raven_csv_20210417_adventurer_j510w_1_raven
+Source: On-board Featherweight GPS, J510W flight, 17-Apr-2021
+File  : 20210417_Adventurer_J510W_1_GPS.csv
+------------------------------------------------------------------------
+  Total rows     : 490
+  Rows fix=3     : 490
+  Duration       : 241.1 s
+  Time span      : 1618711604.900 to 1618711846.000 (Unix)
+  ALT range      : 2835 to 13539 ft  (864.1 to 4126.7 m MSL)
+  Ground baseline: 3037.5 ft  (925.8 m MSL)  [median of last 30 samples]
+  First-10 median: 2871.0 ft  (875.1 m MSL)  [sanity check]
+  GPS peak (MSL) : 13539.0 ft  (4126.7 m)
+  GPS apogee AGL : 3200.9 m  (10502 ft)  at t=26.4 s
+
+  --- EKF comparison ---
+  EKF final_z    : -5.76 m
+  EKF duration   : 238.8 s
+  EKF events     : 100296  (baro ratio 1.000)
+
+  GPS apogee AGL : 3200.9 m
+  EKF peak_z_m   : 3202.1 m
+  Abs difference : 1.3 m
+  Agreement      : 0.04%
+
+  Coarse altitude profile (10 equal time steps):
+  t_elapsed      ALT_ft       AGL_m
+       0.0        2871       -50.7
+       6.6        4455       432.1
+      12.1        9900      2091.7
+      17.5       12221      2799.1
+      23.0       13352      3143.9
+      28.4       13489      3185.6
+      79.1       10482      2269.1
+     132.1        7449      1344.6
+     187.1        4434       425.7
+     241.1        2847       -58.1
+
+
+Flight: raven_csv_20210417_adventurer_j530_1_raven
+Source: On-board Featherweight GPS, J530 flight (T1-C), 17-Apr-2021
+File  : 20210417_Adventurer_J530_1_GPS.csv
+------------------------------------------------------------------------
+  Total rows     : 444
+  Rows fix=3     : 444
+  Duration       : 856.9 s
+  Time span      : 1618720772.300 to 1618721629.200 (Unix)
+  ALT range      : 2813 to 11904 ft  (857.4 to 3628.3 m MSL)
+  Ground baseline: 3025.0 ft  (922.0 m MSL)  [median of last 30 samples]
+  First-10 median: 2845.0 ft  (867.2 m MSL)  [sanity check]
+  GPS peak (MSL) : 11904.0 ft  (3628.3 m)
+  GPS apogee AGL : 2706.3 m  (8879 ft)  at t=23.9 s
+
+  --- EKF comparison ---
+  EKF final_z    : -5.89 m
+  EKF duration   : 211.8 s
+  EKF events     : 88977  (baro ratio 1.000)
+
+  GPS apogee AGL : 2706.3 m
+  EKF peak_z_m   : 2721.0 m
+  Abs difference : 14.7 m
+  Agreement      : 0.54%
+
+  Coarse altitude profile (10 equal time steps):
+  t_elapsed      ALT_ft       AGL_m
+       0.0        2845       -54.9
+       4.8        3145        36.6
+      10.6        8061      1535.0
+      15.6       10599      2308.6
+      20.5       11663      2632.9
+      25.4       11869      2695.7
+      65.7        9404      1944.3
+     116.7        6273       990.0
+     164.7        3542       157.6
+     856.9        2813       -64.6
+
+
+========================================================================
+SUMMARY
+========================================================================
+flight_id                                                GPS_peak_m  t_apex_s
+raven_csv_20210417_adventurer_j510w_1_raven                  3200.9      26.4
+raven_csv_20210417_adventurer_j530_1_raven                   2706.3      23.9
+
+GPS altitude accuracy note:
+  Consumer-grade GPS (Featherweight) vertical accuracy: approx. +/-10-30 m.
+  GPS peak AGL should be interpreted as an independent order-of-magnitude
+  check on the EKF apogee estimate, not a precision ground truth.

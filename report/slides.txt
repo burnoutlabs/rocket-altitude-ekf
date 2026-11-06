@@ -1,0 +1,306 @@
+1
+
+Offline Rocket Flight State Estimation Using an Extended Kalman Filter
+
+ECE 9203: Random Signals
+
+April, 2026
+Electrical and Computer Engineering
+
+2
+
+Background
+High-power rocketry: amateur / experimental rockets using certified H–O class motors
+Typical flight profile:
+vertical launch
+motor burnout (~1-3 s)
+coasting to apogee
+parachute recovery (~20-600 s total)
+
+
+
+Rocket Flight Tracking using EKF
+3
+
+Background Cont.
+Onboard data loggers record sensor data throughout flight; reviewed post-flight for performance analysis, motor characterisation, and safety
+Sensors carried aboard:
+Axial accelerometer (IMU): body-frame specific force, 50-1141 Hz
+ Barometric pressure: absolute pressure, 20-55 Hz
+
+
+Rocket Flight Tracking using EKF
+4
+
+Problem & Motivation
+The axial IMU acceleration nor barometric pressure alone gives full state directly
+Goal: reconstruct z (altitude), vz (velocity), ba (accel bias) from asynchronous logged data
+Why not just integrate IMU?
+Bias drift, vibration will lead to unbounded error without correction
+Why not just use baro?
+No velocity, susceptible to pressure transients
+
+
+Rocket Flight Tracking using EKF
+5
+
+Datasets
+Obtained from DOFpro.com, a public community-driven flight archive
+24 real flights + 1 synthetic emulation reference selected for evaluation
+A number of additional sets were available but subsequently dropped due to failed flight (CATO), static port oscillation, insufficient data columns
+
+
+
+Rocket Flight Tracking using EKF
+6
+
+Dataset Metrics
+Rocket Flight Tracking using EKF
+Family
+IMU Rate
+Baro. Rate
+Record Start
+multi_time_csv
+~100 Hz
+~35 Hz
+Before launch
+raven_csv
+~400 Hz
+~20 Hz
+Before launch
+trimmed_txt
+~1140 Hz
+~55 Hz
+At ignition
+emulation_csv
+50 Hz
+50 Hz
+Before launch
+7
+
+Stochastic Formulation
+Rocket Trajectory = Latent random process observed through noisy sensors
+xk+1 = f(xk,uk,Δtk) + wk		wk ~ N(0,Qk)
+yk     = h(xk)+vk				vk  ~ N(0,Rk)
+The state is given by: x = [z, vz, ba]T
+Qk process noise: unmodeled thrust, aero, wind
+Rk measurement noise: barometer uncertainty
+Kalman = MMSE estimator under linear-Gaussian assumptions
+h(z) is nonlinear (ISA pressure model)
+This is where the extended portion of the EKF comes in
+Rocket Flight Tracking using EKF
+
+Process Model
+Continuous-time dynamics (linear in state):
+ż = vz		v̇ = uz-ba+wv		ḃa = wb
+Where:		uz = aIMU - g
+i.e., approx. 0 on pad and positive at burnout
+Discrete predict at inter-event step Δt
+Fk =  	1		Δt		-½ Δt2
+				0		1		  -Δt
+				0		0		    1
+Process is linear, Fk is exact and not approx.
+
+
+
+Rocket Flight Tracking using EKF
+
+Variable Process Noise
+Covariance prediction:
+Pk- = Fk  Pk-1+  FkT + Qd(Δt)
+Qd(Δt) explicitly scaled by inter-event interval
+Why is variable-step EKF required? 
+IMU:baro sampling varies widely (1:1 to 21:1) with no shared clock, so Δt is non-uniform
+process noise must scale with Δt, meaning larger intervals accumulate proportionally more uncertainty 
+A fixed-Q assumption would therefore be invalid
+
+
+
+Rocket Flight Tracking using EKF
+
+Measurement Model
+Baro. measures pressure not altitude, the conversion is nonlinear (ISA troposphere)
+
+
+Using our standard launch values and rearranging yields our model:
+
+
+
+Rocket Flight Tracking using EKF
+✝ LibreTexts Engineering - 2.3.3: ISA equations
+✝ 
+
+Measurement Model Cont.
+EKF linearizes around each update:
+
+Altitude-domain tuning parameter rbaro [m²] maps to pressure-domain: 
+Reff= Hk2 rbaro
+rbaro = 64m2 ⇒ σP​ ≈ 94 Pa 
+Tuning chosen to be practical (σz​= 8m), yet conservative across heterogeneous sensors 
+
+
+
+Rocket Flight Tracking using EKF
+
+Update & Covariance
+Standard innovation and gain:
+vk = yk - h(xk-)
+KK = Pk- HkT Sk-1
+Covariance uses Joseph form:
+Pk+ = (I - KKHK) Pk- (I-KKHk)T + KkRkKkT
+Rather than the simpler P+ = (I - KH) Pk-, as it preserves symmetry and positive- definiteness under finite-precision arithmetic
+
+
+
+Rocket Flight Tracking using EKF
+
+Asynchronous Replay 
+IMU + baro: merged by timestamp into one sorted event stream (tie-break = IMU first)
+At every event: predict step with held uz (zero-order hold)
+At baro events only: measurement update
+No resampling: variable-step handles non-uniform intervals
+
+
+
+Rocket Flight Tracking using EKF
+
+Asynchronous Replay 
+Rocket Flight Tracking using EKF
+
+Parameter Selection
+Values were chosen by physical reasoning
+Attempted grid search methodology was unsuccessful
+Rocket Flight Tracking using EKF
+Parameter
+Value
+Unit
+Meaning
+q_vz_psd     qvz
+4.0
+m2/s5
+Unmodeled accel PSD
+q_ba_psd     qba
+0.0025
+m2/s3
+Bias random walk
+r_baro_var    rbaro
+64
+m2
+Baro noise (σ = 8 m)
+init_var_z      σz2​
+2500
+m2
+Altitude prior (σ = 50 m)
+init_var_vz    σvz2​
+900
+m2/s2
+Velocity prior (σ = 30 m/s)
+init_var_ba    σba2​
+25
+m2/s4
+Bias prior (σ = 5 m/s²)
+Broad velocity prior covers flights that begin record at ignition time
+
+Initialization
+Specific-force: uz = aIMU - g 
+reads ≈ 0 on pad, positive during burn
+Launch-relative baro: z0≈ 0 regardless of site elevation; reference = median of first 200 baro samples
+Initial state: x0 = [z0, 0, 0]T, P0 = diag(2500,900,25)
+z0 overridden to first finite launch-relative baro sample before filter loop
+Pre-launch convergence: 20-60s static window drops Pzz = 2500 to < 100 m² before liftoff
+Rocket Flight Tracking using EKF
+
+Rocket Flight Tracking using EKF
+Results
+Altitude tracks baro closely with vz crossing zero at apogee (~45 s), and final uncertainty Pzz≈ 2 m indicating strong landing convergence 
+
+Results Cont.
+Bias converges during pre-launch pad phase
+E190 j570w results:
+apogee = 2674 m
+final_z = −0.2 m 
+NIS mean = 3.49
+Raven cross-val: 0.2%
+Rocket Flight Tracking using EKF
+
+Innovation Diagnostics
+Rocket Flight Tracking using EKF
+Pre-launch (static phase)
+Innovation ≈ 0, NIS ≈ 0
+Filter fully converged; strong model–measurement agreement
+Launch transient (high dynamics)
+Large innovation spike & NIS ≫ χ² threshold (3.84)
+Expected model mismatch during rapid acceleration
+
+Innovation Diagnostics
+Rocket Flight Tracking using EKF
+Post-transient flight 
+Innovation centered at zero (no bias)
+NIS ~1-3 (statistically consistent regime)
+Near-apogee: elevated NIS (reduced baro sensitivity)
+Occasional spikes from isolated measurement artifacts
+Overall
+NIS mean = 3.49 (launch + localized spikes)
+Filter shows correct transient → convergence behavior
+
+Covariance Diagnostics
+Rocket Flight Tracking using EKF
+Covariance (log scale): two-phase Pzz drop:
+rapid pre-launch
+gradual in-flight
+All three variances decrease monotonically
+
+Fleet Results
+Rocket Flight Tracking using EKF
+J570W
+J270W
+J530-R
+J394
+Apogee
+2674m
+1549m
+~1600m*
+2905m
+NIS Mean
+3.49
+0.83
+0.57
+2.73
+Final Z
+-0.2m
+-0.2m
+-1104m†
++14.2m‡
+*  ascent only
+✝ body reorientation error
+‡ synoptic pressure drift
+Below is a summary table of Tier 1 representative flights
+~20 other flights evaluated but omitted for brevity)
+
+Discussion 
+Estimator architecture & robustness
+Nonlinear pressure EKF with linear process; variable-step Qd(Δt) and Joseph form ensured stability (no covariance issues)
+Gating disabled: large outliers (+/-4400 Pa) absorbed without divergence
+Performance outcomes
+14/16 non-Raven flights within +/-5 m accuracy
+All 25 flights return finite, stable final states
+Rocket Flight Tracking using EKF
+
+Next Steps
+Add gyroscope + attitude estimation to resolve Raven post-apogee divergence
+Introduce barometric bias as a 4th state to handle synoptic drift
+Per-family Q/R tuning (refine and reattempt grid search methodology)
+Integration & testing on DSP / embedded system
+Rocket Flight Tracking using EKF
+
+Question & Answer Period
+Rocket Flight Tracking using EKF
+?
+26
+
+
+Demo
+Rocket Flight Tracking using EKF
+27
+
+28
