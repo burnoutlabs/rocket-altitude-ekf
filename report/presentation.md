@@ -48,7 +48,7 @@ _Pressure-Domain Nonlinear Measurement Update on 25 Heterogeneous Flights_
 | `raven_csv`      | ~400 Hz    | ~20 Hz    | **At ignition** |
 | `trimmed_txt`    | ~1141 Hz   | ~55 Hz    | Before launch   |
 
-- **Cross-validation:** 7 same-day DOFPro + Raven pairs on the same rocket — apogee agreement **< 0.7%**
+- **Cross-validation:** 6 independent same-day DOFPro + Raven pairs on the same rocket (7 logger pairings; two are one J510W flight) — apogee agreement **< 0.7%**
 
 > _The dataset spans a huge range of logger speeds — from 50 Hz up to 1141 Hz IMU. The Raven family is the most distinct: it starts logging at motor ignition, so there's no pre-launch quiet window for the filter to establish a baseline. That turns out to be important for results. The cross-validation table is the key data-integrity check — we didn't need external GPS to confirm the estimator is working._
 

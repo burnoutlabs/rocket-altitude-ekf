@@ -40,8 +40,10 @@ The pipeline processes 25 flights total (24 real + 1 emulation).
 
 ### 1.3 Cross-Logger Validation
 
-Seven same-day, same-motor flight pairs were present (XTRA or OnBoard logger + Raven altimeter
-on the same rocket). All pairs agreed on apogee altitude to within **< 1%**:
+Seven same-day, same-motor logger pairings were present (XTRA or OnBoard logger + Raven altimeter
+on the same rocket), covering **six independent flights**: the two J510W rows are the same
+physical flight (the /213 file is a second record whose sensor data matches the primary XTRA
+file), so they count once. All six agreed on apogee altitude to within **< 1%**:
 
 | Pair                   | Multi-time alt | Raven alt | Agreement |
 | ---------------------- | -------------- | --------- | --------- |
