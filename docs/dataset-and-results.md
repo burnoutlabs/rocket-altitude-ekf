@@ -255,7 +255,7 @@ parameter shared across all families.
 
 ### 5.2 Bias Convergence
 
-`final_ba_mps2` reflects the accelerometer DC offset estimated from flight:
+`final_ba_mps2` is the final value of the accelerometer-bias state:
 
 | Family           | ba range (m/s²) | Note                                  |
 | ---------------- | --------------- | ------------------------------------- |
@@ -264,9 +264,14 @@ parameter shared across all families.
 | `trimmed_txt`    | −7.7 to −18.5   | ICM sensor; larger DC offset expected |
 | `raven_csv`      | −4.3 to −11.4   | Raven integrated IMU                  |
 
-All values are physically plausible (0.3–1.9 g equivalent). The wide spread across
-rocket types is expected — different IMU hardware on different airframes. The bias
-state is working as intended.
+**Correction (under investigation, issue #4).** These values were previously described
+here as physically plausible accelerometer biases (0.3–1.9 g equivalent) and the bias
+state as working as intended. That claim is withdrawn. A MEMS accelerometer bias is well
+under 1 m/s²; values of 3–18 m/s², including −5.4 m/s² on the *synthetic* emulation flight,
+mean `b_a` is absorbing model error rather than tracking sensor bias. See
+[ekf-reference.md §15.1](ekf-reference.md#151-accelerometer-bias-state-absorbs-model-error)
+for the write-up. The final-altitude results rest on the barometer correcting the trajectory,
+not on `b_a` being a true bias estimate.
 
 ---
 
