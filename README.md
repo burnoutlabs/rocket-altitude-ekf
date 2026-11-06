@@ -65,9 +65,8 @@ directories, and are not redistributed in this repository.
 - The accelerometer-bias state absorbs roughly 1 g of model error: recorded
   final `b_a` values are several m/s^2, far larger than a real MEMS
   accelerometer bias. Body-axis acceleration is used as vertical, and its sign
-  flips after apogee.
-- The report's Eq. 12 shows `Q_d` without the bias cross-terms; the code in
-  `ekf_predict.m` implements them, and the code is the correct one.
+  flips after apogee. What is and is not explained is written up in
+  `docs/ekf-reference.md` §15.1; no fix has been chosen yet.
 - The report's numbers refer to 25 flights, while
   `matlab/data_fetch/source_data.m` lists 23 active sources, so the report's
   figures cannot be regenerated exactly from the committed source list.

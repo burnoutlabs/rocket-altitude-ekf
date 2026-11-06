@@ -131,7 +131,27 @@ $Q_d$ is composed from two PSD terms:
 1. `q_vz_psd` — velocity disturbance PSD
 2. `q_ba_psd` — bias random walk PSD
 
-with explicit $\Delta t$-polynomial terms (up to $\Delta t^5$) in [ekf_predict.m](../matlab/ekf/ekf_predict.m).
+with explicit $\Delta t$-polynomial terms (up to $\Delta t^5$) in [ekf_predict.m](../matlab/ekf/ekf_predict.m) (`discretize_process_noise`).
+
+With $Q_c = \mathrm{diag}(0, q_{v_z}, q_{b_a})$ and $\Phi(\tau) = F(\tau)$ above, exact integration gives
+
+$$
+Q_d(\Delta t) = \int_0^{\Delta t} \Phi(\tau)\, Q_c\, \Phi(\tau)^\top \, d\tau
+= q_{v_z}
+\begin{bmatrix}
+\frac{\Delta t^3}{3} & \frac{\Delta t^2}{2} & 0\\
+\frac{\Delta t^2}{2} & \Delta t & 0\\
+0 & 0 & 0
+\end{bmatrix}
++ q_{b_a}
+\begin{bmatrix}
+\frac{\Delta t^5}{20} & \frac{\Delta t^4}{8} & -\frac{\Delta t^3}{6}\\
+\frac{\Delta t^4}{8} & \frac{\Delta t^3}{3} & -\frac{\Delta t^2}{2}\\
+-\frac{\Delta t^3}{6} & -\frac{\Delta t^2}{2} & \Delta t
+\end{bmatrix}
+$$
+
+The bias term is not diagonal: bias noise reaches $z$ and $v_z$ through $\Phi(\tau)\,[0, 0, 1]^\top = [-\tau^2/2, -\tau, 1]^\top$, so it adds the $\Delta t^5/20$, $\Delta t^3/3$ diagonal terms and the negative cross-terms.
 
 This is important because replay intervals are variable (asynchronous sensors), so fixed-$Q$ assumptions are avoided.
 
@@ -357,7 +377,7 @@ Invalid figure IDs fail fast with a clear error from `apply_name_value.m`.
 
 Replay validation: [validate_replay_events.m](../matlab/ekf/pipeline/validate_replay_events.m) checks time monotonicity, finite signals, and event accounting.
 
-All-flight EKF audit: [run_full_ekf_audit.m](../matlab/debug/run_full_ekf_audit.m) compares mode/gate combinations and writes debug artifacts.
+All-flight EKF audit: there is no audit script in this repository (an earlier version of this page linked `matlab/debug/run_full_ekf_audit.m`, which does not exist). The recorded all-flight audit is [AUDIT-2026-04-25.md](../archive/AUDIT-2026-04-25.md).
 
 Current validated configuration (from full 25-flight audit):
 
@@ -375,3 +395,25 @@ Current validated configuration (from full 25-flight audit):
 4. **Single barometric reference** — altitude is relative to launch-time ambient pressure; synoptic pressure changes accumulate as apparent altitude error (see `dataset-and-results.md` §4.3)
 5. **Fixed global Q/R** — same parameters for all four sensor families (50–1141 Hz IMU, 20–55 Hz baro); per-family tuning would improve NIS consistency but is out of scope
 6. **Gating disabled globally** — avoids baro starvation on diverse flight profiles; accepted trade-off
+7. **Accelerometer-bias state absorbs model error** — final `b_a` is several m/s², not a MEMS bias; see §15.1
+
+### 15.1 Accelerometer-Bias State Absorbs Model Error
+
+Status: open finding, tracked in issue #4. No fix has been chosen; this section records what is known so the filter is not reused on the assumption that `b_a` is a sensor bias.
+
+**Observation.** `b_a` is meant to track a slowly varying MEMS accelerometer bias, which is well under 1 m/s². The recorded final values (`dataset-and-results.md` §5.2) are −3.3 to −9.5 m/s² for DOFPro XTRA/OnBoard, −7.7 to −18.5 m/s² for the trimmed ICM logs, −4.3 to −11.4 m/s² for Raven, and −5.4 m/s² on the synthetic emulation flight. On T1-A (J570W OnBoard, report Fig. 2) `b_a` stays near zero on the pad and moves to about −9 m/s² **during boost**. These magnitudes are of the order of gravity.
+
+**How the input is formed.** Every parser feeds one body axis into `accel_z_mps2` (Raven `Axial Accel (Gs)`; DOFPro `acceleration` in g; trimmed ICM one axis in mg; emulation `Acceleration z [m/s^2]`). [prepare_measurements_for_ekf.m](../matlab/ekf/pipeline/prepare_measurements_for_ekf.m) treats it as vertical specific force, $u_z = a - g$, with `accel_is_specific_force = true` set globally in [main.m](../matlab/main.m).
+
+**What is explained.** For Raven, the airframe turns over under the parachute after apogee, so the axial channel reads about −g; the model sees a sustained ~2 g error ([AUDIT-2026-04-25.md](../archive/AUDIT-2026-04-25.md), line 59), and a bias random walk with `q_ba_psd = 0.0025` cannot follow a step that size.
+
+**What is not explained.** Turnover does not account for T1-A, which converges to about −9 m/s² before apogee, nor for the emulation flight, which comes from a simulator. Whether the emulation file's `Acceleration z` is specific force (+g at rest) or kinematic acceleration (0 at rest) has not been checked; if it is kinematic, the global `− g` alone would push `b_a` toward −g.
+
+**Consequence.** The final-altitude results are carried by the barometric update correcting the trajectory, with `b_a` acting as a catch-all for unmodelled acceleration (axis misalignment, sign convention, drag, turnover). The earlier statement that these values are "physically plausible" biases and that "the bias state is working as intended" is withdrawn. Do not read `b_a` as a sensor-bias estimate, and do not reuse the filter as an altitude reference before this is resolved.
+
+**Options under consideration** (none chosen; each needs MATLAB runs to evaluate):
+
+1. Establish each family's acceleration convention at rest (+g, 0 or −g) and make `accel_is_specific_force` per-family.
+2. Use the IMU only from liftoff to apogee and run baro-only (constant velocity) after apogee.
+3. Where a logger records tilt, project axial acceleration to vertical.
+4. Model the bias as a constant plus a separate unmodelled-acceleration term.
