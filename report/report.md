@@ -75,11 +75,11 @@ $$P_k^- = F_k P_{k-1}^+ F_k^T + Q_d(\Delta t) \tag{11}$$
 
 ### 3.3 Process Noise Discretization
 
-The discrete process noise $Q_d(\Delta t)$ is derived from the continuous-time noise covariance by exact integration of the state transition matrix [2]:
+The discrete process noise $Q_d(\Delta t)$ is derived from the continuous-time noise covariance $Q_c = \text{diag}(0,\ q_{v_z},\ q_{b_a})$ by exact integration of the state transition matrix [2], $Q_d(\Delta t) = \int_0^{\Delta t} \Phi(\tau)\, Q_c\, \Phi(\tau)^T \, d\tau$ with $\Phi(\tau) = F(\tau)$ from Eq. (10):
 
-$$Q_d(\Delta t) = \begin{bmatrix} q_{v_z}\dfrac{\Delta t^3}{3} & q_{v_z}\dfrac{\Delta t^2}{2} & 0 \\[6pt] q_{v_z}\dfrac{\Delta t^2}{2} & q_{v_z}\,\Delta t & 0 \\[6pt] 0 & 0 & q_{b_a}\,\Delta t \end{bmatrix} \tag{12}$$
+$$Q_d(\Delta t) = q_{v_z} \begin{bmatrix} \dfrac{\Delta t^3}{3} & \dfrac{\Delta t^2}{2} & 0 \\[6pt] \dfrac{\Delta t^2}{2} & \Delta t & 0 \\[6pt] 0 & 0 & 0 \end{bmatrix} + q_{b_a} \begin{bmatrix} \dfrac{\Delta t^5}{20} & \dfrac{\Delta t^4}{8} & -\dfrac{\Delta t^3}{6} \\[6pt] \dfrac{\Delta t^4}{8} & \dfrac{\Delta t^3}{3} & -\dfrac{\Delta t^2}{2} \\[6pt] -\dfrac{\Delta t^3}{6} & -\dfrac{\Delta t^2}{2} & \Delta t \end{bmatrix} \tag{12}$$
 
-The $z$-$v_z$ coupling terms arise because velocity disturbance integrates into position. Scaling by $\Delta t$, $\Delta t^2$, $\Delta t^3$ ensures larger steps accumulate proportionally more uncertainty, consistent with the continuous-time model. All nine entries are implemented.
+The $z$-$v_z$ coupling terms arise because velocity disturbance integrates into position. The bias random walk enters the kinematic states through $\Phi(\tau)\,[0\ 0\ 1]^T = [-\tau^2/2\ \ {-\tau}\ \ 1]^T$, which produces the higher-order diagonal terms and the negative bias cross-terms. Scaling by powers of $\Delta t$ ensures larger steps accumulate proportionally more uncertainty, consistent with the continuous-time model. All nine entries of both terms are implemented (`discretize_process_noise` in `matlab/ekf/ekf_predict.m`).
 
 ---
 
@@ -99,7 +99,7 @@ The true measurement is barometric pressure. The ISA tropospheric pressure-altit
 
 $$h(z) = p_0 \left(1 - \frac{z_\text{abs}}{H_T}\right)^{\beta}, \quad z_\text{abs} = z + z_\text{ref} \tag{14}$$
 
-with $p_0 = 101325$ Pa, $H_T = T_0/L \approx 44330.77$ m ($T_0 = 288.15$ K, $L = 6.5\times10^{-3}$ K/m), $\beta = g_0/(\mathcal{R}_d\,L) \approx 5.25588$ ($g_0 = 9.80665$ m/s², $\mathcal{R}_d = 287.05$ J/(kg·K) is the specific gas constant for dry air [6]), and $z_\text{ref}$ the launch-site absolute altitude. The EKF linearizes $h$ around the predicted state:
+with $p_0 = 101325$ Pa, $H_T = T_0/L \approx 44330.77$ m ($T_0 = 288.15$ K, $L = 6.5\times10^{-3}$ K/m), $\beta = g_0/(\mathcal{R}_d\,L) \approx 5.25588$ ($g_0 = 9.80665$ m/s², $\mathcal{R}_d = 287.05287$ J/(kg·K) is the specific gas constant for dry air [6]), and $z_\text{ref}$ the launch-site absolute altitude. The EKF linearizes $h$ around the predicted state:
 
 $$H_k = \begin{bmatrix} \frac{\partial h}{\partial z} & 0 & 0 \end{bmatrix} \tag{15}$$
 
@@ -242,9 +242,9 @@ The J570W flight is the primary result demonstration: a full-duration multi_time
 
 ![EKF state overview for T1-A (J570W, 3409 m apogee, 276 s). Top: estimated altitude with baro observations. Middle: estimated vertical velocity. Bottom: estimated accelerometer bias.](./figures/overview_t1a_j570w.png){width=80%}
 
-_Fig. 2 EKF state overview for T1-A (J570W). The altitude estimate tracks baro observations closely throughout. Velocity crosses zero at apogee (t ≈ 125 s) and returns near zero at landing. Bias remains near zero through the ~100 s pre-launch pad phase, then converges rapidly to approximately −9 m/s² during the boost phase and remains stable through descent._
+_Fig. 2 EKF state overview for T1-A (J570W). The altitude estimate tracks baro observations closely throughout. Velocity crosses zero at apogee (t ≈ 125 s) and returns near zero at landing. Bias remains near zero through the ~100 s pre-launch pad phase, then moves rapidly to approximately −9 m/s² during the boost phase and remains there through descent. A value of order g is not a plausible MEMS accelerometer bias: the bias state is absorbing model error here (see the correction note in Section 7.1)._
 
-The pre-launch pad window (0–100 s), launch (t ≈ 100 s), and apogee (t ≈ 125 s) are all visible in Fig. 2; velocity crosses zero cleanly and bias converges to ≈ −9 m/s² during boost. Figs. 2a–2b zoom into the boost and apogee phases to show sensor fusion and outlier-rejection behaviour directly.
+The pre-launch pad window (0–100 s), launch (t ≈ 100 s), and apogee (t ≈ 125 s) are all visible in Fig. 2; velocity crosses zero cleanly and the bias state moves to ≈ −9 m/s² during boost. **Correction:** that value is about 0.9 g, far larger than any MEMS accelerometer bias, so it should not be read as a converged sensor-bias estimate. The bias state absorbs unmodelled acceleration (single-axis input treated as vertical specific force); the altitude estimate is held by the barometric updates. This is under investigation; see `docs/ekf-reference.md` §15.1. Figs. 2a–2b zoom into the boost and apogee phases to show sensor fusion and outlier-rejection behaviour directly.
 
 ![Boost phase detail for T1-A (J570W), t ≈ 100–112 s, z ≈ 200–1700 m. Scattered baro observations during high-G powered ascent; EKF altitude and velocity estimates smooth through the measurement noise.](./figures/overview_t1a_j570w_CLIP_BOOST.png){width=80%}
 
@@ -390,6 +390,8 @@ Following the April 2026 presentation, four issues were identified and corrected
 **GPS external validation.** Two flights (J510W, J530) carried Featherweight GPS loggers. A post-hoc comparison, added in Section 8.1, confirms EKF apogee within 1.3 m (0.04%) and 14.7 m (0.54%) of GPS respectively — within Featherweight vertical accuracy. This serves as an absolute cross-check independent of the barometric reference.
 
 **Zoomed diagnostic figures.** Figures 2a and 2b were added to Section 7.1 in response to a question about filter behavior during the boost phase. They show the scattered barometric measurements versus the smooth EKF estimate during high-G ascent, and a ~110 m barometric outlier near apogee that the filter absorbs without deflection.
+
+**Later corrections (November 2026).** Eq. (12) previously omitted the bias-noise contribution to $Q_d$; it now states the full matrix that `ekf_predict.m` implements. $\mathcal{R}_d$ is now given to the precision used in the code. The Fig. 2 caption and Section 7.1 no longer describe the ≈ −9 m/s² bias value as a converged sensor bias.
 
 ---
 

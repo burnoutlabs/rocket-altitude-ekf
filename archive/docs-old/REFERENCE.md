@@ -261,7 +261,7 @@ Important defaults:
 
 Replay validation: [validate_replay_events.m](../../matlab/ekf/pipeline/validate_replay_events.m) checks time monotonicity, finite signals, and event accounting.
 
-All-flight EKF audit: [run_full_ekf_audit.m](../../matlab/debug/run_full_ekf_audit.m) compares mode/gate combinations and writes debug artifacts.
+All-flight EKF audit: `run_full_ekf_audit.m` is described as comparing mode/gate combinations and writing debug artifacts, but no such script exists in this repository (the link that stood here pointed to a nonexistent `matlab/debug/`). The recorded audit is [AUDIT-2026-04-25.md](../AUDIT-2026-04-25.md).
 
 Current audit recommendation (from `debug_artifacts`):
 
@@ -307,7 +307,7 @@ Primary entrypoint:
 
 Deep diagnostic entrypoint:
 
-1. run [run_full_ekf_audit.m](../../matlab/debug/run_full_ekf_audit.m)
+1. `run_full_ekf_audit.m` (does not exist in this repository; see above)
 
 Core implementation files:
 
