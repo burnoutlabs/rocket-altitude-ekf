@@ -54,7 +54,7 @@ trajectory (linear altitude update only) and needs no downloaded data.
 
 ## Data
 
-All flight data comes from the [DOFPro flight-data archive](https://www.dofpro.org/).
+All flight data comes from the [DOFPro flight-data archive](https://dofpro.org/RCK/fltdata/FlightData.html).
 None of it is the author's own flights. The logs are fetched at run time from
 the URLs in `matlab/data_fetch/source_data.m` (and, for GPS,
 `matlab/gps_validation/_gps_raw/gps_download_manifest.csv`) into gitignored
@@ -77,4 +77,14 @@ Developed as a graduate course project (Winter 2026); the report is in report/.
 
 ## Licence
 
-Licence: not yet chosen.
+- **Code** — everything under `matlab/`, `tests/` and `tools/`, and the
+  scripts in `archive/` — is licensed under the MIT License; see
+  [`LICENSE`](LICENSE).
+- **Documentation, report and figures** — `docs/`, `report/` (including
+  `report/figures/`), the Markdown notes in `archive/`, and this README — are
+  licensed under the Creative Commons Attribution 4.0 International License
+  (CC BY 4.0); see [`LICENSE-docs`](LICENSE-docs).
+- **Flight data is not covered by either licence.** It comes from the
+  [DOFPro flight-data archive](https://dofpro.org/RCK/fltdata/FlightData.html),
+  which states no licence. It is fetched at run time from the URLs listed in
+  this repository and is not redistributed here.
