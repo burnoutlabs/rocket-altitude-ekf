@@ -43,20 +43,40 @@ The pipeline processes 25 flights total (24 real + 1 emulation).
 Seven same-day, same-motor logger pairings were present (XTRA or OnBoard logger + Raven altimeter
 on the same rocket), covering **six independent flights**: the two J510W rows are the same
 physical flight (the /213 file is a second record whose sensor data matches the primary XTRA
-file), so they count once. All six agreed on apogee altitude to within **< 1%**:
+file), so they count once. All six agreed on apogee altitude to within **1.3%**:
 
 | Pair                   | Multi-time alt | Raven alt | Agreement |
 | ---------------------- | -------------- | --------- | --------- |
-| H148R 1 Jul 2017       | 586 m          | 581 m     | 0.7%      |
-| J510W 8 Jul 2017       | 3168 m         | 3167 m    | 0.0%      |
-| J510W 8 Jul 2017 (213) | 3168 m         | 3167 m    | 0.0%      |
-| J354 9 Sep 2017        | 2546 m         | 2544 m    | 0.1%      |
-| J394 7 Oct 2017        | 2905 m         | 2899 m    | 0.2%      |
-| J150 9 Dec 2017        | 2692 m         | 2688 m    | 0.1%      |
-| J570W 9 Dec 2017       | 2674 m         | 2668 m    | 0.2%      |
+| H148R 1 Jul 2017       | 643 m          | 638 m     | 0.8%      |
+| J510W 8 Jul 2017       | 4217 m         | 4210 m    | 0.2%      |
+| J510W 8 Jul 2017 (213) | 4217 m         | 4210 m    | 0.2%      |
+| J354 9 Sep 2017        | 3223 m         | 3218 m    | 0.2%      |
+| J394 7 Oct 2017        | 3679 m         | 3669 m    | 0.3%      |
+| J150 9 Dec 2017        | 3451 m         | 3410 m    | 1.2%      |
+| J570W 9 Dec 2017       | 3414 m         | 3369 m    | 1.3%      |
 
 This confirms data integrity: both sensors on the same airframe measure the same
 physical event.
+
+Both altitudes use the pipeline's barometer convention: ISA troposphere altitude
+(p0 = 101325 Pa) of each log's pressure stream, apogee taken as the maximum minus
+the launch reference, the median over the first 0.5 s of barometer samples.
+Agreement is |difference| / larger value. Regenerate the table from the raw logs
+(fetched by `matlab/data.m` into `matlab/_data_raw/`) with:
+
+```
+python tools/cross_logger_apogee.py [LOG_DIR]
+```
+
+The script also prints each logger's own AGL column. The XTRA/OnBoard
+`Pressure AGL` maximum matches the multi-time column to within 1 m; the Raven's
+`[Altitude (Baro-Ft-AGL)]` maximum reads 5–7% lower than the ISA value from its
+own pressure stream; the Raven firmware uses its own pressure-to-altitude
+conversion, which is not documented here.
+
+An earlier version of this table (kept in `archive/`) converted the pressure
+drop from the first sample linearly at the sea-level gradient (0.08326 m/Pa),
+which understates apogee by 9–25% on these flights.
 
 ---
 

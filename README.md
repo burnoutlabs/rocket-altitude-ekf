@@ -40,6 +40,8 @@ For the GPS comparison, run `matlab/gps_validation/download_gps_data.m`, then
 trajectory (linear altitude update only) and needs no downloaded data.
 `tools/sync_figures.py` copies the report figures from
 `matlab/_report_artifacts/figures/` into `report/figures/`.
+`tools/cross_logger_apogee.py` recomputes the cross-logger apogee table in
+`docs/dataset-and-results.md` from the downloaded logs.
 
 ## Layout
 
@@ -50,7 +52,7 @@ trajectory (linear altitude update only) and needs no downloaded data.
 | `report/` | Report (`report.md`), presentation notes, slide text (`slides.txt`), figures |
 | `archive/` | Working notes, the audit and data investigation from development |
 | `tests/` | Smoke test on synthetic data |
-| `tools/` | Figure sync helper |
+| `tools/` | Figure sync helper, cross-logger apogee table |
 
 ## Data
 
