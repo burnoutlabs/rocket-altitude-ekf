@@ -66,8 +66,6 @@ directories, and are not redistributed in this repository.
   final `b_a` values are several m/s^2, far larger than a real MEMS
   accelerometer bias. Body-axis acceleration is used as vertical, and its sign
   flips after apogee.
-- The report's Eq. 12 shows `Q_d` without the bias cross-terms; the code in
-  `ekf_predict.m` implements them, and the code is the correct one.
 - The report's numbers refer to 25 flights, while
   `matlab/data_fetch/source_data.m` lists 23 active sources, so the report's
   figures cannot be regenerated exactly from the committed source list.

@@ -1,7 +1,7 @@
 # Dataset and EKF Results — Reporting Reference
 
 _Consolidated from data investigation (2026-04-25) and post-cleanup pipeline run (2026-04-26)._
-_Source archive: `project/archive/data_investigation/` and `project/archive/AUDIT-2026-04-25.md`._
+_Source archive: [`archive/data_investigation/`](../archive/data_investigation/) and [`archive/AUDIT-2026-04-25.md`](../archive/AUDIT-2026-04-25.md)._
 
 All data sourced from the DOFPro flight-data archive: <https://dofpro.org/RCK/fltdata/FlightData.html>
 

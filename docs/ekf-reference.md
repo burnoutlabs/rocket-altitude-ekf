@@ -131,7 +131,27 @@ $Q_d$ is composed from two PSD terms:
 1. `q_vz_psd` — velocity disturbance PSD
 2. `q_ba_psd` — bias random walk PSD
 
-with explicit $\Delta t$-polynomial terms (up to $\Delta t^5$) in [ekf_predict.m](../matlab/ekf/ekf_predict.m).
+with explicit $\Delta t$-polynomial terms (up to $\Delta t^5$) in [ekf_predict.m](../matlab/ekf/ekf_predict.m) (`discretize_process_noise`).
+
+With $Q_c = \mathrm{diag}(0, q_{v_z}, q_{b_a})$ and $\Phi(\tau) = F(\tau)$ above, exact integration gives
+
+$$
+Q_d(\Delta t) = \int_0^{\Delta t} \Phi(\tau)\, Q_c\, \Phi(\tau)^\top \, d\tau
+= q_{v_z}
+\begin{bmatrix}
+\frac{\Delta t^3}{3} & \frac{\Delta t^2}{2} & 0\\
+\frac{\Delta t^2}{2} & \Delta t & 0\\
+0 & 0 & 0
+\end{bmatrix}
++ q_{b_a}
+\begin{bmatrix}
+\frac{\Delta t^5}{20} & \frac{\Delta t^4}{8} & -\frac{\Delta t^3}{6}\\
+\frac{\Delta t^4}{8} & \frac{\Delta t^3}{3} & -\frac{\Delta t^2}{2}\\
+-\frac{\Delta t^3}{6} & -\frac{\Delta t^2}{2} & \Delta t
+\end{bmatrix}
+$$
+
+The bias term is not diagonal: bias noise reaches $z$ and $v_z$ through $\Phi(\tau)\,[0, 0, 1]^\top = [-\tau^2/2, -\tau, 1]^\top$, so it adds the $\Delta t^5/20$, $\Delta t^3/3$ diagonal terms and the negative cross-terms.
 
 This is important because replay intervals are variable (asynchronous sensors), so fixed-$Q$ assumptions are avoided.
 
@@ -357,7 +377,7 @@ Invalid figure IDs fail fast with a clear error from `apply_name_value.m`.
 
 Replay validation: [validate_replay_events.m](../matlab/ekf/pipeline/validate_replay_events.m) checks time monotonicity, finite signals, and event accounting.
 
-All-flight EKF audit: [run_full_ekf_audit.m](../matlab/debug/run_full_ekf_audit.m) compares mode/gate combinations and writes debug artifacts.
+All-flight EKF audit: there is no audit script in this repository (an earlier version of this page linked `matlab/debug/run_full_ekf_audit.m`, which does not exist). The recorded all-flight audit is [AUDIT-2026-04-25.md](../archive/AUDIT-2026-04-25.md).
 
 Current validated configuration (from full 25-flight audit):
 
