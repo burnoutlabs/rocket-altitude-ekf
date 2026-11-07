@@ -200,9 +200,9 @@ All chosen by **physical reasoning**, not grid search:
 
 ## Slide 12 - Primary Result: T1-A J570W
 
-![EKF state overview — T1-A (J570W, DOFPro OnBoard, 2674 m apogee, 324 s).](./figures/overview_t1a_j570w.png)
+![EKF state overview — T1-A (J570W, DOFPro OnBoard, 3409 m apogee, 276 s).](./figures/overview_t1a_j570w.png)
 
-_apogee = 2674 m | final_z = −0.2 m | NIS mean = 3.49 | Raven cross-val: 0.2%_
+_apogee = 3409 m | final_z = −0.2 m | NIS mean = 3.49 | Raven cross-val: 0.2%_
 
 - Altitude tracks baro throughout; $v_z$ crosses zero cleanly at apogee (~t = 45 s)
 - Bias converges during pre-launch pad phase → stable at ≈ −3.5 m/s²
@@ -278,13 +278,13 @@ _apogee = 2674 m | final_z = −0.2 m | NIS mean = 3.49 | Raven cross-val: 0.2%_
 
 |          | T1-A J570W | T1-B J270W | T1-C J530 Raven | T1-D J394 |
 | -------- | ---------- | ---------- | --------------- | --------- |
-| Apogee   | 2674 m     | 1549 m     | ~1600 m\*        | 2905 m    |
+| Apogee   | 3409 m     | 1834 m     | ~1600 m\*        | 3669 m    |
 | NIS mean | 3.49       | **0.83**   | 0.57            | 2.73      |
 | final_z  | −0.2 m     | −0.2 m     | −1104 m†        | +14.2 m‡  |
 
-\* ascent only †body reorientation ‡synoptic pressure drift
+\* ascent only †body reorientation ‡synoptic pressure drift — apogee is the EKF peak altitude (report §7)
 
-![T1-B: J270W Vulcanite (trimmed_txt, 1549 m). Best-calibrated result — NIS = 0.83.](./figures/overview_t1b_j270w.png)
+![T1-B: J270W Vulcanite (trimmed_txt, 1834 m). Best-calibrated result — NIS = 0.83.](./figures/overview_t1b_j270w.png)
 
 > _The fleet summary table is the central quantitative result. T1-A and T1-B represent nominal filter behaviour (final_z within −0.2 m). T1-C and T1-D are explained anomalies shown on the next slide. The 14/16 non-Raven ±5 m figure is the key fleet-wide claim._
 
@@ -308,7 +308,7 @@ _apogee = 2674 m | final_z = −0.2 m | NIS mean = 3.49 | Raven cross-val: 0.2%_
 - Filter anchors to launch-time baro — genuine pressure change **indistinguishable from altitude**
 - **Not a filter error** — fundamental limit of single-sensor baro without GPS
 
-![T1-D: J394 (2905 m, +14.2 m synoptic drift).](./figures/overview_t1d_j394.png)
+![T1-D: J394 (3669 m, +14.2 m synoptic drift).](./figures/overview_t1d_j394.png)
 
 > _Both anomalies are explained physical causes, not filter failures. The Raven divergence is actually a useful result — it clearly demonstrates what happens when the IMU axis assumption breaks down, which makes the case for why attitude data matters. The J394 case illustrates the inherent limitation of barometric altimetry that GPS or pressure telemetry would solve._
 

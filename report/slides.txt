@@ -217,7 +217,7 @@ Altitude tracks baro closely with vz crossing zero at apogee (~45 s), and final 
 Results Cont.
 Bias converges during pre-launch pad phase
 E190 j570w results:
-apogee = 2674 m
+apogee = 3409 m
 final_z = −0.2 m 
 NIS mean = 3.49
 Raven cross-val: 0.2%
@@ -257,10 +257,10 @@ J270W
 J530-R
 J394
 Apogee
-2674m
-1549m
+3409m
+1834m
 ~1600m*
-2905m
+3669m
 NIS Mean
 3.49
 0.83
