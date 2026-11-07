@@ -308,7 +308,7 @@ not on `b_a` being a true bias estimate.
 
 For report figures, use:
 
-- **Class A primary:** `multi_time_csv_e190_9dec2017_j570w_onboard` — 2674 m apogee, clean, cross-validated against Raven, final_z = −0.2 m
+- **Class A primary:** `multi_time_csv_e190_9dec2017_j570w_onboard` — 3414 m barometric apogee (ISA, §1.3), clean, cross-validated against Raven, final_z = −0.2 m
 - **Class A, trimmed_txt:** `trimmed_txt_20210410_vulcanite_j270w_14a_trimmed` — 1141 Hz IMU, 600 s record, final_z = −0.2 m
 - **Class B (limitation):** `raven_csv_20210417_adventurer_j530_1_raven` — clean ascent, clear post-apogee divergence, moderate divergence depth (−1104 m)
 

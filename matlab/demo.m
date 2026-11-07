@@ -32,10 +32,10 @@ end
 %%
 %[text] ## Run Controls
 %[text] Set `active_flight_index` (1–4) to select a T1 flight. Toggle `ekf_measurement_model` to compare the nonlinear pressure update against the linear altitude update.
-% 1 = T1-A: multi_time J570W       (2674 m, cross-validated 0.2%, final_z = -0.2 m)
-% 2 = T1-B: trimmed_txt J270W      (1549 m, NIS = 0.83, final_z = -0.2 m)
+% 1 = T1-A: multi_time J570W       (3409 m, cross-validated 0.2%, final_z = -0.2 m)
+% 2 = T1-B: trimmed_txt J270W      (1834 m, NIS = 0.83, final_z = -0.2 m)
 % 3 = T1-C: Raven J530             (~600 m ascent, post-apogee diverges)
-% 4 = T1-D: multi_time J394        (2905 m, +14.2 m synoptic drift)
+% 4 = T1-D: multi_time J394        (3669 m, +14.2 m synoptic drift)
 active_flight_index = 1;
 
 % "pressure_nonlinear" (true EKF update) | "altitude_linear" (linear KF, for comparison)
